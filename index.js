@@ -30,7 +30,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    
 
     const craftCollection = client.db('craftDB').collection('craft');
 
@@ -39,7 +39,21 @@ async function run() {
       const cursor = craftCollection.find();
       const result =await cursor.toArray();
       res.send(result);
+
+     
     })
+
+    // app.get('/craft:id', async(req,res)=>{
+    //   const result = await craftCollection.findOne({ _id:new ObjectId(req.params.id),});
+    //   console.log(result);
+    //   res.send(result);
+      
+
+    // })
+
+
+
+    
 
     app.get('/craft/:email', async(req,res)=>{
       console.log(req.params.email);
@@ -53,6 +67,31 @@ async function run() {
       res.send(result);
       
 
+    })
+
+    app.put('/craft/:id', async(req,res)=>{
+      console.log(req.params.id, {body:req.body});
+      const id = req.params.id;
+      const body = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+          $set: {
+              image: body.image,
+              item:body.item,
+              subcategory:body.subcategory,
+              price: body.price,
+              rating:body.rating,
+              customization:body.customization,
+              time:body.time,
+              stock:body.stock,
+              description: body.description
+              
+          },
+          
+      };
+      console.log({body})
+      const result = await craftCollection.updateOne(filter, updateDoc);
+      res.send(result);
     })
 
     app.post('/craft', async(req,res)=>{
